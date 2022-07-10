@@ -4,8 +4,12 @@ import { Post } from "./entities/Post";
 import microConfig from './mikro-orm.config';
 
 const main = async () => {
+    // connect to the database
     const orm = await MikroORM.init(microConfig);
+    // run migrations
+    orm.getMigrator().up();
 
+    // run sql queries
     const post = orm.em.create(Post, {title: 'my first post'} as {title: string, createdAt: Date, updatedAt: Date});
     await orm.em.persistAndFlush(post);
     console.log('sql2--------');
