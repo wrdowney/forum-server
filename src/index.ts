@@ -1,19 +1,22 @@
 import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from './constants';
 import { Post } from "./entities/Post";
-import microConfig from './mikro-orm.config';
+import mikroConfig from './mikro-orm.config';
 
 const main = async () => {
     // connect to the database
-    const orm = await MikroORM.init(microConfig);
+    const orm = await MikroORM.init(mikroConfig);
     // run migrations
     orm.getMigrator().up();
 
-    // run sql queries
-    const post = orm.em.create(Post, {title: 'my first post'} as {title: string, createdAt: Date, updatedAt: Date});
+    const generator = orm.getSchemaGenerator();
+    await generator.updateSchema();
+
+    // // run sql queries
+    const post = orm.em.create(Post, { title: "my first post" });
     await orm.em.persistAndFlush(post);
-    console.log('sql2--------');
-    await orm.em.nativeInsert(Post, {title:'my first post 2'})
+    const posts = await orm.em.find(Post, {});
+    console.log(posts)
 }
 
 main().catch((err) => {
