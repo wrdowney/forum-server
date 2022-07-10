@@ -8,6 +8,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
+import { UserResolver } from './resolvers/user';
 
 const main = async () => {
     // connect to the database
@@ -15,13 +16,13 @@ const main = async () => {
     // run migrations
     orm.getMigrator().up();
 
-    // const generator = orm.getSchemaGenerator();
-    // await generator.updateSchema();
+    // create a new express server
     const app = express();
 
+    // create hello and post schemas
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [HelloResolver, PostResolver],
+            resolvers: [HelloResolver, PostResolver, UserResolver],
             validate: false,
         }),
         context: () => ({ em: orm.em })
